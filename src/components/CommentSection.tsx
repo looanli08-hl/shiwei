@@ -21,6 +21,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiThinking, setAiThinking] = useState(false);
 
   useEffect(() => {
     fetch(`/api/comments?postId=${postId}`)
@@ -38,7 +39,17 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     setLoading(false);
 
     if (res.ok) {
-      // 重新加载评论
+      // 检查是否 @示未AI
+      if (text.includes("@示未AI")) {
+        setAiThinking(true);
+        await fetch("/api/ai-reply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId, commentContent: text }),
+        });
+        setAiThinking(false);
+      }
+
       const updated = await fetch(`/api/comments?postId=${postId}`).then((r) =>
         r.json()
       );
@@ -128,7 +139,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="写下评论…"
+          placeholder="写下评论… 输入 @示未AI 召唤 AI 参与讨论"
           className="flex-1 rounded-lg bg-[var(--input-bg)] px-4 py-2 text-sm outline-none placeholder:text-[#bbb]"
           onKeyDown={(e) => {
             if (e.key === "Enter" && content.trim()) {
@@ -145,8 +156,16 @@ export default function CommentSection({ postId }: CommentSectionProps) {
         </button>
       </div>
 
+      {/* AI 思考提示 */}
+      {aiThinking && (
+        <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#f0edf8] px-4 py-3 text-sm text-[var(--ai-purple)]">
+          <span className="animate-pulse">●</span>
+          示未AI 正在思考回复…
+        </div>
+      )}
+
       {/* 评论列表 */}
-      {comments.length === 0 ? (
+      {comments.length === 0 && !aiThinking ? (
         <p className="mt-6 text-center text-sm text-[var(--muted)]">
           暂无评论，来发表第一条吧
         </p>
