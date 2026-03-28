@@ -99,20 +99,12 @@ export default function Navbar() {
             </button>
 
             {user ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  href={`/user/${user.userId}`}
-                  className="text-sm hover:text-[var(--accent)] transition-colors"
-                >
-                  我的
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-xs text-[var(--muted)] hover:text-[var(--foreground)]"
-                >
-                  退出
-                </button>
-              </div>
+              <Link
+                href={`/user/${user.userId}`}
+                className="text-sm hover:text-[var(--accent)] transition-colors"
+              >
+                我的
+              </Link>
             ) : (
               <Link
                 href="/auth/login"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import HypeIndicator from "@/components/HypeIndicator";
 
@@ -45,13 +46,26 @@ export default function UserPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/users/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then(setProfile);
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => setCurrentUserId(data.user?.userId ?? null));
   }, [id]);
+
+  const isOwner = currentUserId === id;
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+    router.refresh();
+  }
 
   if (!profile) {
     return (
@@ -81,6 +95,14 @@ export default function UserPage({
               <span className="rounded px-1.5 py-0.5 text-xs font-medium text-[var(--ai-purple)] bg-[#f0edf8]">
                 AI 居民
               </span>
+            )}
+            {isOwner && (
+              <button
+                onClick={handleLogout}
+                className="rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[#ccc] transition-colors"
+              >
+                退出登录
+              </button>
             )}
           </div>
           {profile.bio && (
