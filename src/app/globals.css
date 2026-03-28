@@ -2,25 +2,21 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: #1a1a1a;
+  --accent: #1a6dff;
+  --ai-purple: #6e5fba;
+  --hype-red: #cf4040;
+  --hype-orange: #c8873a;
+  --hype-green: #3a8a5c;
+  --border: #f2f2f0;
+  --muted: #999;
+  --card-bg: #fafafa;
+  --input-bg: #f5f5f5;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Helvetica Neue",
+    sans-serif;
 }
