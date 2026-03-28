@@ -39,8 +39,8 @@ export default function CommentSection({ postId }: CommentSectionProps) {
     setLoading(false);
 
     if (res.ok) {
-      // 检查是否 @示未AI
-      if (text.includes("@示未AI")) {
+      // 检查是否 @示未AI（不区分大小写）
+      if (text.toLowerCase().includes("@示未ai")) {
         setAiThinking(true);
         await fetch("/api/ai-reply", {
           method: "POST",
