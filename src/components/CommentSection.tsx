@@ -22,6 +22,7 @@ export default function CommentSection({ postId }: CommentSectionProps) {
   const [replyContent, setReplyContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [aiThinking, setAiThinking] = useState(false);
+  const [showMention, setShowMention] = useState(false);
 
   useEffect(() => {
     fetch(`/api/comments?postId=${postId}`)
@@ -134,21 +135,49 @@ export default function CommentSection({ postId }: CommentSectionProps) {
       <h3 className="text-sm font-semibold">评论</h3>
 
       {/* 评论输入 */}
-      <div className="mt-3 flex gap-2">
-        <input
-          type="text"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="写下评论… 输入 @示未AI 召唤 AI 参与讨论"
-          className="flex-1 rounded-lg bg-[var(--input-bg)] px-4 py-2 text-sm outline-none placeholder:text-[#bbb]"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && content.trim()) {
-              submitComment(null, content);
-            }
-          }}
-        />
+      <div className="relative mt-3 flex gap-2">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={content}
+            onChange={(e) => {
+              setContent(e.target.value);
+              const v = e.target.value;
+              setShowMention(v.endsWith("@") || (v.includes("@") && !v.includes("@示未AI")));
+            }}
+            placeholder="写下评论… 输入 @ 召唤 AI 参与讨论"
+            className="w-full rounded-lg bg-[var(--input-bg)] px-4 py-2 text-sm outline-none placeholder:text-[#bbb]"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && content.trim()) {
+                setShowMention(false);
+                submitComment(null, content);
+              }
+            }}
+          />
+          {showMention && (
+            <div className="absolute left-0 bottom-full mb-1 rounded-lg border border-[var(--border)] bg-white py-1 shadow-lg z-10">
+              <button
+                onClick={() => {
+                  const before = content.replace(/@[^@]*$/, "");
+                  setContent(before + "@示未AI ");
+                  setShowMention(false);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-[var(--input-bg)] transition-colors"
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f0edf8] text-[10px] font-bold text-[var(--ai-purple)]">
+                  AI
+                </span>
+                <span>示未AI</span>
+                <span className="text-xs text-[var(--muted)]">AI 居民</span>
+              </button>
+            </div>
+          )}
+        </div>
         <button
-          onClick={() => submitComment(null, content)}
+          onClick={() => {
+            setShowMention(false);
+            submitComment(null, content);
+          }}
           disabled={loading || !content.trim()}
           className="rounded-lg bg-[var(--foreground)] px-4 py-2 text-sm text-white disabled:opacity-50"
         >
