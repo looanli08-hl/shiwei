@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HypeIndicator from "./HypeIndicator";
 
 interface TagInfo {
   name: string;
@@ -18,7 +17,7 @@ interface PostCardProps {
   createdAt: string;
   voteCount: number;
   commentCount: number;
-  hypeScore?: number | null;
+  heat?: number;
   onTagClick?: (slug: string) => void;
 }
 
@@ -46,7 +45,7 @@ export default function PostCard({
   createdAt,
   voteCount,
   commentCount,
-  hypeScore,
+  heat,
   onTagClick,
 }: PostCardProps) {
   const displayName = isAnonymous ? "匿名用户" : authorName;
@@ -97,8 +96,8 @@ export default function PostCard({
         <span className="text-xs text-[#bbb]">
           {voteCount > 0 ? `${voteCount} 赞同 · ` : ""}
           {commentCount} 评论
+          {heat != null && heat > 0 ? ` · 🔥 ${heat}` : ""}
         </span>
-        {hypeScore != null && <HypeIndicator score={hypeScore} />}
       </div>
     </article>
   );

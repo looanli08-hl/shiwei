@@ -22,13 +22,13 @@ interface Post {
   createdAt: string;
   voteCount: number;
   commentCount: number;
-  hypeScore: number | null;
+  heat: number;
 }
 
 interface TrendingPost {
   id: string;
   title: string;
-  hypeScore?: number | null;
+  heat?: number;
 }
 
 export default function HomePage() {

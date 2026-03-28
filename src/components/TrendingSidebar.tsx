@@ -3,7 +3,7 @@ import Link from "next/link";
 interface TrendingPost {
   id: string;
   title: string;
-  hypeScore?: number | null;
+  heat?: number;
 }
 
 interface TagRank {
@@ -73,23 +73,19 @@ export default function TrendingSidebar({
         </ol>
       </div>
 
-      {/* 炒作指数榜 */}
+      {/* 热度榜 */}
       {hypeRanking.length > 0 && (
         <div className="rounded-lg bg-[var(--card-bg)] p-4">
-          <h3 className="mb-3 text-sm font-semibold">🎯 炒作指数榜</h3>
+          <h3 className="mb-3 text-sm font-semibold">🔥 热度榜</h3>
           <ol className="space-y-2.5">
             {hypeRanking.map((post, index) => (
               <li key={post.id} className="flex items-start gap-2">
                 <span
                   className={`shrink-0 text-sm font-semibold ${
-                    (post.hypeScore ?? 0) > 70
-                      ? "text-[var(--hype-red)]"
-                      : (post.hypeScore ?? 0) >= 40
-                        ? "text-[var(--hype-orange)]"
-                        : "text-[var(--hype-green)]"
+                    index < 3 ? "text-[var(--hype-red)]" : "text-[#ccc]"
                   }`}
                 >
-                  {post.hypeScore}
+                  {post.heat}
                 </span>
                 <Link
                   href={`/post/${post.id}`}

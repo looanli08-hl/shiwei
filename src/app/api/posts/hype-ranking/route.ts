@@ -3,21 +3,19 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   const posts = await prisma.post.findMany({
-    where: { hypeVotes: { some: {} } },
     include: {
-      hypeVotes: { select: { score: true } },
+      _count: { select: { comments: true } },
+      votes: { select: { value: true } },
     },
   });
 
   const ranked = posts
-    .map((p) => ({
-      id: p.id,
-      title: p.title,
-      hypeScore: Math.round(
-        p.hypeVotes.reduce((s, v) => s + v.score, 0) / p.hypeVotes.length
-      ),
-    }))
-    .sort((a, b) => b.hypeScore - a.hypeScore)
+    .map((p) => {
+      const voteCount = p.votes.reduce((s, v) => s + v.value, 0);
+      const heat = p.viewCount + voteCount * 5 + p._count.comments * 3;
+      return { id: p.id, title: p.title, heat };
+    })
+    .sort((a, b) => b.heat - a.heat)
     .slice(0, 6);
 
   return NextResponse.json(ranked);

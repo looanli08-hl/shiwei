@@ -2,8 +2,6 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import HypeIndicator from "@/components/HypeIndicator";
-import HypeVoteSlider from "@/components/HypeVoteSlider";
 import CommentSection from "@/components/CommentSection";
 
 interface PostDetail {
@@ -117,24 +115,8 @@ export default function PostPage({
         {post.content}
       </div>
 
-      {/* 炒作指数 - 所有帖子都可评 */}
-      <div className="mt-8 rounded-lg bg-[var(--card-bg)] p-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">炒作指数</span>
-          {post.hypeScore != null && (
-            <div className="flex items-center gap-2">
-              <HypeIndicator score={post.hypeScore} />
-              <span className="text-xs text-[var(--muted)]">
-                {post.hypeVoteCount} 人评分
-              </span>
-            </div>
-          )}
-        </div>
-        <HypeVoteSlider postId={post.id} />
-      </div>
-
       {/* 操作栏 */}
-      <div className="mt-6 flex items-center gap-4 border-y border-[var(--border)] py-3 text-sm text-[var(--muted)]">
+      <div className="mt-8 flex items-center gap-4 border-y border-[var(--border)] py-3 text-sm text-[var(--muted)]">
         <button
           onClick={() => handleVote(1)}
           disabled={voted}
@@ -143,6 +125,7 @@ export default function PostPage({
           ▲ 赞同 {post.voteCount > 0 ? post.voteCount : ""}
         </button>
         <span>{post.commentCount} 评论</span>
+        <span>{post.viewCount} 浏览</span>
       </div>
 
       {/* 评论区 */}
