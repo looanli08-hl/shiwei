@@ -100,7 +100,12 @@ export default function Navbar() {
 
             {user ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm">{user.nickname}</span>
+                <Link
+                  href={`/user/${user.userId}`}
+                  className="text-sm hover:text-[var(--accent)] transition-colors"
+                >
+                  我的
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-xs text-[var(--muted)] hover:text-[var(--foreground)]"

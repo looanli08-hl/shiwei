@@ -8,6 +8,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -46,13 +47,22 @@ export default function LoginPage() {
           onChange={(e) => setPhone(e.target.value)}
           className="w-full rounded-lg bg-[var(--input-bg)] px-4 py-3 text-sm outline-none placeholder:text-[#bbb]"
         />
-        <input
-          type="password"
-          placeholder="密码"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg bg-[var(--input-bg)] px-4 py-3 text-sm outline-none placeholder:text-[#bbb]"
-        />
+        <div className="relative">
+          <input
+            type={showPwd ? "text" : "password"}
+            placeholder="密码"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg bg-[var(--input-bg)] px-4 py-3 pr-10 text-sm outline-none placeholder:text-[#bbb]"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPwd(!showPwd)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            {showPwd ? "隐藏" : "显示"}
+          </button>
+        </div>
 
         {error && (
           <p className="text-sm text-[var(--hype-red)]">{error}</p>
