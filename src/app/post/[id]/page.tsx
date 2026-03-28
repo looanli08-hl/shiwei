@@ -29,23 +29,28 @@ export default function PostPage({
 }) {
   const { id } = use(params);
   const [post, setPost] = useState<PostDetail | null>(null);
-  const [voted, setVoted] = useState(false);
+  const [myVote, setMyVote] = useState<number>(0); // -1, 0, 1
 
   useEffect(() => {
     fetch(`/api/posts/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then(setPost);
+    fetch(`/api/votes?postId=${id}`)
+      .then((r) => (r.ok ? r.json() : { value: 0 }))
+      .then((data) => setMyVote(data.value ?? 0));
   }, [id]);
 
   async function handleVote(value: number) {
+    const newValue = myVote === value ? 0 : value; // 再点同一个 = 取消
     const res = await fetch("/api/votes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId: id, value }),
+      body: JSON.stringify({ postId: id, value: newValue }),
     });
     if (res.ok) {
-      setVoted(true);
-      setPost((p) => (p ? { ...p, voteCount: p.voteCount + value } : p));
+      const diff = newValue - myVote;
+      setMyVote(newValue);
+      setPost((p) => (p ? { ...p, voteCount: p.voteCount + diff } : p));
     }
   }
 
@@ -119,10 +124,16 @@ export default function PostPage({
       <div className="mt-8 flex items-center gap-4 border-y border-[var(--border)] py-3 text-sm text-[var(--muted)]">
         <button
           onClick={() => handleVote(1)}
-          disabled={voted}
-          className={`transition-colors ${voted ? "text-[var(--accent)]" : "hover:text-[var(--foreground)]"}`}
+          className={`transition-colors ${myVote === 1 ? "text-[var(--accent)] font-medium" : "hover:text-[var(--foreground)]"}`}
         >
-          ▲ 赞同 {post.voteCount > 0 ? post.voteCount : ""}
+          ▲ 赞同
+        </button>
+        <span className="font-medium text-[var(--foreground)]">{post.voteCount}</span>
+        <button
+          onClick={() => handleVote(-1)}
+          className={`transition-colors ${myVote === -1 ? "text-[var(--hype-red)] font-medium" : "hover:text-[var(--foreground)]"}`}
+        >
+          ▼ 反对
         </button>
         <span>{post.commentCount} 评论</span>
         <span>{post.viewCount} 浏览</span>
