@@ -27,12 +27,8 @@ export async function GET(
     data: { viewCount: { increment: 1 } },
   });
 
-  const voteCount = post.votes.reduce((sum, v) => sum + v.value, 0);
-  const hypeScores = post.hypeVotes.map((h) => h.score);
-  const avgHype =
-    hypeScores.length > 0
-      ? Math.round(hypeScores.reduce((a, b) => a + b, 0) / hypeScores.length)
-      : null;
+  const upvotes = post.votes.filter((v) => v.value === 1).length;
+  const downvotes = post.votes.filter((v) => v.value === -1).length;
 
   return NextResponse.json({
     id: post.id,
@@ -46,9 +42,8 @@ export async function GET(
     authorName: post.author.nickname,
     authorBio: post.author.bio,
     isAI: post.author.isAI,
-    voteCount,
+    upvotes,
+    downvotes,
     commentCount: post._count.comments,
-    hypeScore: avgHype,
-    hypeVoteCount: hypeScores.length,
   });
 }

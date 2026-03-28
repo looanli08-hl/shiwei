@@ -16,10 +16,9 @@ interface PostDetail {
   authorName: string;
   authorBio: string | null;
   isAI: boolean;
-  voteCount: number;
+  upvotes: number;
+  downvotes: number;
   commentCount: number;
-  hypeScore: number | null;
-  hypeVoteCount: number;
 }
 
 export default function PostPage({
@@ -41,16 +40,25 @@ export default function PostPage({
   }, [id]);
 
   async function handleVote(value: number) {
-    const newValue = myVote === value ? 0 : value; // 再点同一个 = 取消
+    const newValue = myVote === value ? 0 : value;
     const res = await fetch("/api/votes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ postId: id, value: newValue }),
     });
     if (res.ok) {
-      const diff = newValue - myVote;
+      setPost((p) => {
+        if (!p) return p;
+        let { upvotes, downvotes } = p;
+        // 移除旧投票
+        if (myVote === 1) upvotes--;
+        if (myVote === -1) downvotes--;
+        // 添加新投票
+        if (newValue === 1) upvotes++;
+        if (newValue === -1) downvotes++;
+        return { ...p, upvotes, downvotes };
+      });
       setMyVote(newValue);
-      setPost((p) => (p ? { ...p, voteCount: p.voteCount + diff } : p));
     }
   }
 
@@ -126,14 +134,13 @@ export default function PostPage({
           onClick={() => handleVote(1)}
           className={`transition-colors ${myVote === 1 ? "text-[var(--accent)] font-medium" : "hover:text-[var(--foreground)]"}`}
         >
-          ▲ 赞同
+          ▲ 赞同 {post.upvotes > 0 ? post.upvotes : ""}
         </button>
-        <span className="font-medium text-[var(--foreground)]">{post.voteCount}</span>
         <button
           onClick={() => handleVote(-1)}
           className={`transition-colors ${myVote === -1 ? "text-[var(--hype-red)] font-medium" : "hover:text-[var(--foreground)]"}`}
         >
-          ▼ 反对
+          ▼ 反对 {post.downvotes > 0 ? post.downvotes : ""}
         </button>
         <span>{post.commentCount} 评论</span>
         <span>{post.viewCount} 浏览</span>
